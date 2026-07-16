@@ -1,0 +1,113 @@
+{
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "OK",
+        "ALERT"
+      ],
+      "description": "ALERT when any required field cannot be determined without guessing; otherwise OK."
+    },
+    "total": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The final amount paid or charged, formatted with exactly two decimal places. Null when unavailable, ambiguous, or not uniquely calculable."
+    },
+    "total_source": {
+      "type": "string",
+      "enum": [
+        "printed",
+        "calculated",
+        "unavailable"
+      ],
+      "description": "Whether the total was visibly printed, calculated exactly from fully legible values, or unavailable."
+    },
+    "date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The actual purchase, transaction, sale, payment, or check date formatted as MM/DD/YY. Null when missing, obscured, ambiguous, or unsupported."
+    },
+    "vendor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The person or business that received the payment. State of the Arc Electric must never be returned as the vendor."
+    },
+    "category": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "Business Meals",
+        "Tools",
+        "Material",
+        "Office Expenses",
+        "Vehicle Expenses",
+        "Fuel",
+        "Software Expenses",
+        "Licensing Expenses",
+        "Marketing Expenses",
+        "Taxes",
+        "Labor",
+        null
+      ],
+      "description": "The expense category. Null when it cannot be determined from visible evidence."
+    },
+    "description": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "A brief description of the visibly supported purchase, payment, product, or service."
+    },
+    "alert_message": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "When status is ALERT, begins with *ALERT* and explains which required fields could not be determined and why. Null when status is OK."
+    },
+    "evidence": {
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "string",
+          "description": "The exact visible total text, exact arithmetic used, or an explanation that the total is unavailable."
+        },
+        "date": {
+          "type": "string",
+          "description": "The exact visible date text and its label, or an explanation that the correct transaction date is unavailable."
+        },
+        "vendor": {
+          "type": "string",
+          "description": "The exact visible identifying text supporting the vendor, or an explanation that the vendor is unavailable."
+        }
+      },
+      "required": [
+        "total",
+        "date",
+        "vendor"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "status",
+    "total",
+    "total_source",
+    "date",
+    "vendor",
+    "category",
+    "description",
+    "alert_message",
+    "evidence"
+  ],
+  "additionalProperties": false
+}
