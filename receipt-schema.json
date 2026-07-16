@@ -7,14 +7,19 @@
         "OK",
         "ALERT"
       ],
-      "description": "ALERT when any required field cannot be determined without guessing; otherwise OK."
+      "description": "ALERT when the total, transaction date, or vendor cannot be determined without guessing. Otherwise OK."
     },
     "total": {
-      "type": [
-        "string",
-        "null"
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d{2}$"
+        },
+        {
+          "type": "null"
+        }
       ],
-      "description": "The final amount paid or charged, formatted with exactly two decimal places. Null when unavailable, ambiguous, or not uniquely calculable."
+      "description": "The final amount paid or charged, with exactly two decimal places, or null when unavailable."
     },
     "total_source": {
       "type": "string",
@@ -22,72 +27,85 @@
         "printed",
         "calculated",
         "unavailable"
-      ],
-      "description": "Whether the total was visibly printed, calculated exactly from fully legible values, or unavailable."
+      ]
     },
     "date": {
-      "type": [
-        "string",
-        "null"
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])/\\d{2}$"
+        },
+        {
+          "type": "null"
+        }
       ],
-      "description": "The actual purchase, transaction, sale, payment, or check date formatted as MM/DD/YY. Null when missing, obscured, ambiguous, or unsupported."
+      "description": "The actual transaction, purchase, payment, sale, or check date formatted as MM/DD/YY, or null."
     },
     "vendor": {
-      "type": [
-        "string",
-        "null"
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
       ],
-      "description": "The person or business that received the payment. State of the Arc Electric must never be returned as the vendor."
+      "description": "The person or business receiving payment. Never State of the Arc Electric."
     },
     "category": {
-      "type": [
-        "string",
-        "null"
-      ],
+      "type": "string",
       "enum": [
         "Business Meals",
+        "Insurance",
         "Tools",
         "Material",
         "Office Expenses",
         "Vehicle Expenses",
         "Fuel",
         "Software Expenses",
+        "Inspection Expenses",
         "Licensing Expenses",
-        "Marketing Expenses",
-        "Taxes",
         "Labor",
-        null
+        "Taxes",
+        "Marketing Expenses"
       ],
-      "description": "The expense category. Null when it cannot be determined from visible evidence."
+      "description": "The single allowed category that most closely fits the expense. This field must never be null."
     },
     "description": {
-      "type": [
-        "string",
-        "null"
-      ],
-      "description": "A brief description of the visibly supported purchase, payment, product, or service."
+      "type": "string",
+      "minLength": 1,
+      "description": "A mandatory description of the purchase or payment. When the product is unclear, copy the visible receipt line item."
     },
     "alert_message": {
-      "type": [
-        "string",
-        "null"
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^\\*ALERT\\*"
+        },
+        {
+          "type": "null"
+        }
       ],
-      "description": "When status is ALERT, begins with *ALERT* and explains which required fields could not be determined and why. Null when status is OK."
+      "description": "Begins with *ALERT* when status is ALERT. Otherwise null."
     },
     "evidence": {
       "type": "object",
       "properties": {
         "total": {
           "type": "string",
-          "description": "The exact visible total text, exact arithmetic used, or an explanation that the total is unavailable."
+          "minLength": 1,
+          "description": "Exact visible total text, exact arithmetic used, or an explanation that the total is unavailable."
         },
         "date": {
           "type": "string",
-          "description": "The exact visible date text and its label, or an explanation that the correct transaction date is unavailable."
+          "minLength": 1,
+          "description": "Exact visible date text and its label, or an explanation that the correct date is unavailable."
         },
         "vendor": {
           "type": "string",
-          "description": "The exact visible identifying text supporting the vendor, or an explanation that the vendor is unavailable."
+          "minLength": 1,
+          "description": "Exact visible identifying text, or an explanation that the vendor is unavailable."
         }
       },
       "required": [
