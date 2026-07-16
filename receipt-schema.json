@@ -19,7 +19,7 @@
           "type": "null"
         }
       ],
-      "description": "The final amount paid or charged, with exactly two decimal places, or null when unavailable."
+      "description": "The final amount paid or charged, formatted with exactly two decimal places and no currency symbol, or null when unavailable."
     },
     "total_source": {
       "type": "string",
@@ -27,7 +27,8 @@
         "printed",
         "calculated",
         "unavailable"
-      ]
+      ],
+      "description": "Whether the total was clearly printed, calculated exactly from fully legible information, or unavailable."
     },
     "date": {
       "anyOf": [
@@ -39,7 +40,7 @@
           "type": "null"
         }
       ],
-      "description": "The actual transaction, purchase, payment, sale, or check date formatted as MM/DD/YY, or null."
+      "description": "The actual purchase, transaction, sale, payment, invoice, or check date formatted as MM/DD/YY, or null when unavailable or ambiguous."
     },
     "vendor": {
       "anyOf": [
@@ -51,7 +52,19 @@
           "type": "null"
         }
       ],
-      "description": "The person or business receiving payment. Never State of the Arc Electric."
+      "description": "The person, business, organization, agency, or service receiving payment. State of the Arc Electric must never be returned as the vendor."
+    },
+    "po_number": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^\\d{4}$"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "A four-digit PO number extracted only from an original filename consisting of exactly four digits followed by one file extension. Leading zeros must be preserved and 0000 is valid. Null for every other filename format."
     },
     "category": {
       "type": "string",
@@ -75,19 +88,19 @@
     "description": {
       "type": "string",
       "minLength": 1,
-      "description": "A mandatory description of the purchase or payment. When the product is unclear, copy the visible receipt line item."
+      "description": "A mandatory description of the purchase or payment. When the exact product is unclear, copy the visible receipt line-item text or provide a truthful generic description."
     },
     "alert_message": {
       "anyOf": [
         {
           "type": "string",
-          "pattern": "^\\*ALERT\\*"
+          "minLength": 1
         },
         {
           "type": "null"
         }
       ],
-      "description": "Begins with *ALERT* when status is ALERT. Otherwise null."
+      "description": "When status is ALERT, begins with *ALERT* and explains which required fields could not be determined and why. Null when status is OK."
     },
     "evidence": {
       "type": "object",
@@ -95,23 +108,29 @@
         "total": {
           "type": "string",
           "minLength": 1,
-          "description": "Exact visible total text, exact arithmetic used, or an explanation that the total is unavailable."
+          "description": "The exact visible total text, exact arithmetic used, or an explanation of why the total is unavailable."
         },
         "date": {
           "type": "string",
           "minLength": 1,
-          "description": "Exact visible date text and its label, or an explanation that the correct date is unavailable."
+          "description": "The exact visible date text and its label, or an explanation of why the correct transaction date is unavailable."
         },
         "vendor": {
           "type": "string",
           "minLength": 1,
-          "description": "Exact visible identifying text, or an explanation that the vendor is unavailable."
+          "description": "The exact visible identifying text supporting the vendor, or an explanation of why the vendor is unavailable."
+        },
+        "po_number": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The original filename and an explanation of whether it produced a valid four-digit PO number."
         }
       },
       "required": [
         "total",
         "date",
-        "vendor"
+        "vendor",
+        "po_number"
       ],
       "additionalProperties": false
     }
@@ -122,6 +141,7 @@
     "total_source",
     "date",
     "vendor",
+    "po_number",
     "category",
     "description",
     "alert_message",
